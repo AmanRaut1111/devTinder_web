@@ -1,26 +1,52 @@
+import axios from "axios";
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constant";
+import { removeUser } from "../utils/userSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);
-  console.log("Store user", user);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogOut = async () => {
+    try {
+      await axios.post(BASE_URL + "/logout", {}, {
+        withCredentials: true,
+      });
+      dispatch(removeUser());
+      navigate('/login');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLogoClick = () => {
+    // Check if user is authenticated before navigating
+    if (user) {
+      navigate('/');
+    } else {
+      navigate('/login');  // Redirect to login if not authenticated
+    }
+  };
 
   return (
     <div>
       <div className="navbar bg-base-100">
         <div className="flex-1">
-          <Link to={"/"} className="btn btn-ghost text-xl">DevTinder🚀</Link>
+          {/* Update Link to use onClick with the handleLogoClick function */}
+          <a onClick={handleLogoClick} className="btn btn-ghost text-xl">
+            DevTinder🚀
+          </a>
         </div>
 
-        {
-          user&& <p className="font-bold">Welcome { user.firstName} </p>
-        }
+        {user && <p className="font-bold">Welcome {user.firstName}</p>}
+
         <div className="flex-none gap-2">
-       
           {user && (
             <div className="dropdown dropdown-end mx-5">
-             
               <div
                 tabIndex={0}
                 role="button"
@@ -44,10 +70,13 @@ const NavBar = () => {
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link to={'/connections'}>Connections</Link>
+                </li>
+                         <li>
+                  <Link to={'/requests'}>Requests</Link>
                 </li>
                 <li>
-                  <a>Logout</a>
+                  <a onClick={handleLogOut}>Logout</a>
                 </li>
               </ul>
             </div>
