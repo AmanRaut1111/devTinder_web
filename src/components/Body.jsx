@@ -15,7 +15,7 @@ const Body = () => {
   const fetchUser = async () => {
     if (userData) return; // Avoid calling the API if the user data is already in store
     try {
-      const res = await axios.get(BASE_URL + "/profile", {
+      const res = await axios.get("http://localhost:3000/profile",{},{
         withCredentials: true,
       });
       dispatch(addUser(res.data)); // Store user data in Redux
@@ -31,15 +31,20 @@ const Body = () => {
   };
 
   useEffect(() => {
-    fetchUser(); // Fetch user data on mount if not available
-  }, []); // Ensure the effect runs only when userData changes
+     if (!userData){
+       return navigate('/login')
+ 
+     }else{
+      fetchUser(); // Fetch user data on mount if not available
+     }
+  
+  }, []); // Ensure the effect runs only on mount
 
   return (
     <div>
       <NavBar />
-      <Outlet />{" "}
-      {/* This will render the child components based on the route */}
-      {/* <Footer /> */}
+      <Outlet />
+      {/* <Footer /> Uncomment if you want to include the Footer */}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constant";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user.firstName || "");
@@ -14,6 +15,7 @@ const EditProfile = ({ user }) => {
   const [errMessage, setErrMessage] = useState("");
   const [loading, setLoading] = useState(false); // Added loading state
   const dispatch = useDispatch();
+  const navigate= useNavigate()
   const [showToast, setShowToast] = useState(false);
 
   const validateForm = () => {
@@ -48,7 +50,9 @@ const EditProfile = ({ user }) => {
       );
       dispatch(addUser(res?.data?.data));
       setShowToast(true);
+      
       setErrMessage(""); // Clear error message
+      return navigate('/login')
 
       setTimeout(() => {
         setShowToast(false);
